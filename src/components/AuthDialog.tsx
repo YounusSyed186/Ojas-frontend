@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { getApiErrorMessage } from "@/lib/api/types";
+import { customerDashboardApi } from "@/lib/api/customerDashboardApi";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 
@@ -46,6 +47,7 @@ const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false
   const [verifyPhone, setVerifyPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
+  const [changingPhone, setChangingPhone] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -60,6 +62,7 @@ const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false
     setVerifyPhone("");
     setOtp("");
     setOtpSent(false);
+    setChangingPhone(false);
     setError(null);
     setLoading(false);
   };
@@ -72,11 +75,11 @@ const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false
   }, [open, defaultMode]);
 
   useEffect(() => {
-    if (mode === "verify-phone") {
+    if (mode === "verify-phone" && !changingPhone) {
       if (user?.phone) setVerifyPhone(user.phone);
       else if (signupPhone) setVerifyPhone(signupPhone);
     }
-  }, [mode, user, signupPhone]);
+  }, [mode, user, signupPhone, changingPhone]);
 
   const normalizePhone = (value: string) => value.replace(/\D/g, "").slice(0, 10);
 
@@ -142,8 +145,13 @@ const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false
     setError(null);
 
     try {
+      if (user?.phone && verifyPhone !== user.phone) {
+        await customerDashboardApi.updateProfile({ phone: verifyPhone });
+      }
+
       await sendOtp(verifyPhone);
       setOtpSent(true);
+      setChangingPhone(false);
       toast({
         title: "OTP sent",
         description: "Check your phone for the OTP.",
@@ -191,6 +199,7 @@ const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false
 
     try {
       await sendOtp(verifyPhone);
+      setOtp("");
       toast({
         title: "OTP resent",
         description: "Check your phone for the new OTP.",
@@ -204,6 +213,13 @@ const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false
 
   const switchToSignin = () => {
     setMode("signin");
+    setError(null);
+  };
+
+  const handleChangePhone = () => {
+    setOtp("");
+    setOtpSent(false);
+    setChangingPhone(true);
     setError(null);
   };
 
@@ -453,7 +469,7 @@ const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false
                   }}
                   placeholder="9876543210"
                   className="h-11 rounded-xl"
-                  disabled={!!user?.phone}
+                  disabled={!!user?.phone && !changingPhone}
                 />
               </div>
 
@@ -503,6 +519,15 @@ const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false
                     className="mx-auto block text-xs font-medium text-accent hover:underline disabled:opacity-50"
                   >
                     Resend OTP
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleChangePhone}
+                    disabled={loading}
+                    className="mx-auto block text-xs font-medium text-muted-foreground hover:text-foreground disabled:opacity-50"
+                  >
+                    Change phone number
                   </button>
                 </div>
               )}
