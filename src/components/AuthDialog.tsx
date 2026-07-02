@@ -151,7 +151,7 @@ const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false
 
       await sendOtp(verifyPhone);
       setOtpSent(true);
-      setChangingPhone(false);
+      setChangingPhone(!!user?.phone && verifyPhone !== user.phone);
       toast({
         title: "OTP sent",
         description: "Check your phone for the OTP.",
