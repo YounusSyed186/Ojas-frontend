@@ -463,14 +463,27 @@ const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false
                   pattern="[0-9]*"
                   value={verifyPhone}
                   onChange={(e) => {
-                    setVerifyPhone(normalizePhone(e.target.value));
+                    const nextPhone = normalizePhone(e.target.value);
+                    setVerifyPhone(nextPhone);
+                    setChangingPhone(!!user?.phone && nextPhone !== user.phone);
                     setOtp("");
                     setOtpSent(false);
                   }}
                   placeholder="9876543210"
                   className="h-11 rounded-xl"
-                  disabled={!!user?.phone && !changingPhone}
+                  disabled={loading}
                 />
+
+                {user?.phone && !otpSent && !changingPhone && (
+                  <button
+                    type="button"
+                    onClick={handleChangePhone}
+                    disabled={loading}
+                    className="text-xs font-medium text-accent hover:underline disabled:opacity-50"
+                  >
+                    Change phone number
+                  </button>
+                )}
               </div>
 
               {!otpSent ? (
