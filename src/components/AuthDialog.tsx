@@ -26,7 +26,7 @@ type Props = {
 
 export const AuthDialog = ({ open, onOpenChange, defaultMode = "signin" }: Props) => {
   const [mode, setMode] = useState<Mode>(defaultMode);
-  const { login, register, sendOtp, verifyOtp, user } = useAuth();
+  const { login, register, sendOtp, verifyOtp, user, pendingVerificationUser, pendingVerificationToken } = useAuth();
   const { toast } = useToast();
 
   const [showSigninPassword, setShowSigninPassword] = useState(false);
@@ -50,6 +50,7 @@ const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false
   const [changingPhone, setChangingPhone] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const verificationUser = user ?? pendingVerificationUser;
 
   const resetForm = () => {
     setSignupName("");
@@ -76,10 +77,10 @@ const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false
 
   useEffect(() => {
     if (mode === "verify-phone" && !changingPhone) {
-      if (user?.phone) setVerifyPhone(user.phone);
+      if (verificationUser?.phone) setVerifyPhone(verificationUser.phone);
       else if (signupPhone) setVerifyPhone(signupPhone);
     }
-  }, [mode, user, signupPhone, changingPhone]);
+  }, [mode, verificationUser, signupPhone, changingPhone]);
 
   const normalizePhone = (value: string) => value.replace(/\D/g, "").slice(0, 10);
 
@@ -94,7 +95,8 @@ const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false
 
     setLoading(true);
     try {
-      await register(signupName, signupEmail, signupPassword, signupConfirmPassword, signupPhone);
+      const result = await register(signupName, signupEmail, signupPassword, signupConfirmPassword, signupPhone);
+      setVerifyPhone(result.user?.phone ?? signupPhone);
       setMode("verify-phone");
       toast({
         title: "Account created",
@@ -116,6 +118,7 @@ const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false
       const result = await login(signinEmail, signinPassword);
 
       if (result.requires_phone_verification) {
+        setVerifyPhone(result.user?.phone ?? "");
         setMode("verify-phone");
         toast({
           title: "Phone not verified",
@@ -145,13 +148,13 @@ const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false
     setError(null);
 
     try {
-      if (user?.phone && verifyPhone !== user.phone) {
-        await customerDashboardApi.updateProfile({ phone: verifyPhone });
+      if (verificationUser?.phone && verifyPhone !== verificationUser.phone) {
+        await customerDashboardApi.updateProfile({ phone: verifyPhone }, pendingVerificationToken);
       }
 
       await sendOtp(verifyPhone);
       setOtpSent(true);
-      setChangingPhone(!!user?.phone && verifyPhone !== user.phone);
+      setChangingPhone(!!verificationUser?.phone && verifyPhone !== verificationUser.phone);
       toast({
         title: "OTP sent",
         description: "Check your phone for the OTP.",
@@ -465,7 +468,7 @@ const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false
                   onChange={(e) => {
                     const nextPhone = normalizePhone(e.target.value);
                     setVerifyPhone(nextPhone);
-                    setChangingPhone(!!user?.phone && nextPhone !== user.phone);
+                    setChangingPhone(!!verificationUser?.phone && nextPhone !== verificationUser.phone);
                     setOtp("");
                     setOtpSent(false);
                   }}
@@ -474,7 +477,7 @@ const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false
                   disabled={loading}
                 />
 
-                {user?.phone && !otpSent && !changingPhone && (
+                {verificationUser?.phone && !otpSent && !changingPhone && (
                   <button
                     type="button"
                     onClick={handleChangePhone}

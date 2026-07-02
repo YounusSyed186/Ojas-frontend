@@ -72,6 +72,35 @@ describe("AuthContext", () => {
     expect(authApi.login).toHaveBeenCalledWith({ email: "customer@example.com", password: "password" });
   });
 
+  it("does not log in users who still need phone OTP verification", async () => {
+    vi.mocked(authApi.login).mockResolvedValue({
+      token: "pending-token-123",
+      requires_phone_verification: true,
+      user: {
+        id: 1,
+        name: "Demo Customer",
+        email: "customer@example.com",
+        phone: "9991112222",
+        role: "customer",
+        status: "active",
+        phone_verified_at: null,
+      },
+    });
+
+    render(
+      <AuthProvider>
+        <AuthProbe />
+      </AuthProvider>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /login/i }));
+
+    await waitFor(() => expect(authApi.login).toHaveBeenCalledWith({ email: "customer@example.com", password: "password" }));
+    expect(screen.getByText("signed-out")).toBeInTheDocument();
+    expect(localStorage.getItem("auth_token")).toBeNull();
+    expect(localStorage.getItem("auth_user")).toBeNull();
+  });
+
   it("clears the local session immediately while backend logout is pending", async () => {
     localStorage.setItem("auth_token", "token-123");
     localStorage.setItem(

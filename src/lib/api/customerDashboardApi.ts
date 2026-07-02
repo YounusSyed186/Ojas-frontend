@@ -5,8 +5,10 @@ export const customerDashboardApi = {
 
   profile: () => apiClient.get("/customer/profile").then((r) => r.data),
 
-  updateProfile: (data: Record<string, unknown>) =>
-    apiClient.put("/customer/profile", data).then((r) => r.data),
+  updateProfile: (data: Record<string, unknown>, token?: string | null) =>
+    apiClient
+      .put("/customer/profile", data, token ? { headers: { Authorization: `Bearer ${token}` } } : undefined)
+      .then((r) => r.data),
 
   subscriptions: () => apiClient.get("/subscriptions").then((r) => r.data),
 
