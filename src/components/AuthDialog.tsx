@@ -9,6 +9,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription as AlertDialogDescription_,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { getApiErrorMessage } from "@/lib/api/types";
@@ -50,6 +60,7 @@ const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false
   const [changingPhone, setChangingPhone] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showSigninConfirm, setShowSigninConfirm] = useState(false);
   const verificationUser = user ?? pendingVerificationUser;
 
   const resetForm = () => {
@@ -111,6 +122,11 @@ const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false
 
   const handleSignin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setShowSigninConfirm(true);
+  };
+
+  const confirmSignin = async () => {
+    setShowSigninConfirm(false);
     setError(null);
     setLoading(true);
 
@@ -559,6 +575,23 @@ const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false
           )}
         </div>
       </DialogContent>
+
+      <AlertDialog open={showSigninConfirm} onOpenChange={setShowSigninConfirm}>
+        <AlertDialogContent className="rounded-3xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Sign in</AlertDialogTitle>
+            <AlertDialogDescription_>
+              Are you sure you want to sign in to your OJAS account?
+            </AlertDialogDescription_>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-full" disabled={loading}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmSignin} className="rounded-full bg-primary hover:bg-primary-glow" disabled={loading}>
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign in"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 };

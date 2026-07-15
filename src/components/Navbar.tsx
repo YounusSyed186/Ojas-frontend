@@ -2,6 +2,17 @@ import { useEffect, useState } from "react";
 import { Menu, X, ShoppingBag, User, LogOut } from "lucide-react";
 import { Link, NavLink, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthDialog } from "@/components/AuthDialog";
@@ -105,13 +116,30 @@ export const Navbar = () => {
                   <User className="w-4 h-4" />
                   <span className="max-w-[100px] truncate">{user?.name?.split(" ")[0] || "Account"}</span>
                 </Link>
-                <button
-                  onClick={logout}
-                  className="w-10 h-10 grid place-items-center rounded-full hover:bg-white/20 transition-colors"
-                  title="Sign out"
-                >
-                  <LogOut className="w-4 h-4" />
-                </button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <button
+                      className="w-10 h-10 grid place-items-center rounded-full hover:bg-white/20 transition-colors"
+                      title="Sign out"
+                    >
+                      <LogOut className="w-4 h-4" />
+                    </button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="rounded-3xl">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Sign out</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to sign out of your OJAS account?
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel className="rounded-full">Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={logout} className="rounded-full bg-primary hover:bg-primary-glow">
+                        Sign out
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             ) : (
               <Button
@@ -165,12 +193,27 @@ export const Navbar = () => {
                 >
                   <User className="w-4 h-4" /> Dashboard
                 </Link>
-                <button
-                  onClick={() => { logout(); setOpen(false); }}
-                  className="flex items-center gap-2 w-full p-3 rounded-xl bg-white/10 text-sm"
-                >
-                  <LogOut className="w-4 h-4" /> Sign out
-                </button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <button className="flex items-center gap-2 w-full p-3 rounded-xl bg-white/10 text-sm">
+                      <LogOut className="w-4 h-4" /> Sign out
+                    </button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="rounded-3xl">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Sign out</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to sign out of your OJAS account?
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel className="rounded-full">Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => { logout(); setOpen(false); }} className="rounded-full bg-primary hover:bg-primary-glow">
+                        Sign out
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             ) : (
               <Button
