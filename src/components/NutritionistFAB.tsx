@@ -63,7 +63,7 @@ export const NutritionistFAB = () => {
               className="group relative inline-flex items-center gap-2.5 rounded-full bg-primary text-primary-foreground pl-4 pr-5 py-3.5 shadow-elegant hover:bg-primary-glow transition-colors"
               aria-label="Speak to our nutritionist"
             >
-              <span className="absolute inset-0 rounded-full bg-accent/40 animate-ping opacity-60" aria-hidden />
+              <span className="absolute inset-0 rounded-full ring-1 ring-primary-foreground/20" aria-hidden />
               <span className="relative w-8 h-8 rounded-full bg-accent text-accent-foreground grid place-items-center shadow-gold">
                 <MessageCircle className="w-4 h-4" />
               </span>

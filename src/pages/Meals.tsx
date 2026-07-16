@@ -14,6 +14,7 @@ import m5 from "@/assets/meal-5.jpg";
 import m6 from "@/assets/meal-6.jpg";
 
 const images = [m1, m2, m3, m4, m5, m6];
+const categoryOrder = ["shots", "breakfast", "lunch", "dinner"];
 
 const MealsPage = () => {
   const { data: mealsData, isLoading: mealsLoading } = useQuery({
@@ -26,7 +27,11 @@ const MealsPage = () => {
   });
 
   const meals: Meal[] = mealsData?.meals ?? [];
-  const categories: MealCategory[] = catData?.categories ?? [];
+  const categories: MealCategory[] = [...(catData?.categories ?? [])].sort((a, b) => {
+    const aIndex = categoryOrder.indexOf(a.slug);
+    const bIndex = categoryOrder.indexOf(b.slug);
+    return (aIndex === -1 ? categoryOrder.length : aIndex) - (bIndex === -1 ? categoryOrder.length : bIndex);
+  });
   const isLoading = mealsLoading || catLoading;
 
   return (

@@ -52,12 +52,13 @@ export const FeaturedMeals = () => {
         </div>
       </div>
 
-      {isLoading ? (
+      <div className="container">
+        {isLoading ? (
         <div className="flex justify-center py-20">
           <Loader2 className="w-8 h-8 animate-spin text-accent" />
         </div>
       ) : (
-        <div ref={ref} className="flex gap-5 overflow-x-auto snap-x snap-mandatory pb-6 px-[max(1rem,calc((100vw-1280px)/2+1rem))] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div ref={ref} className="flex gap-5 overflow-x-auto snap-x snap-mandatory pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {featured.map((m, i) => (
             <Reveal key={m.slug} delay={i * 0.05}>
               <Link
@@ -90,7 +91,8 @@ export const FeaturedMeals = () => {
           ))}
           <div className="shrink-0 w-4" />
         </div>
-      )}
+        )}
+      </div>
     </section>
   );
 };

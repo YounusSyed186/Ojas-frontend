@@ -99,7 +99,7 @@ export const Plans = () => {
                     asChild
                     className={`mt-8 rounded-full h-12 ${
                       featured
-                        ? "bg-accent text-accent-foreground hover:bg-accent-glow"
+                        ? "bg-white text-primary hover:bg-white/90 hover:text-primary active:bg-white/80 focus-visible:ring-white focus-visible:ring-offset-primary shadow-soft"
                         : "bg-primary text-primary-foreground hover:bg-primary-glow"
                     }`}
                   >

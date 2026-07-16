@@ -81,8 +81,8 @@ export const Navbar = () => {
                 <NavLink
                   to={l.to}
                   className={({ isActive }) =>
-                    `relative transition-colors after:absolute after:left-0 after:-bottom-1 after:h-px after:bg-accent after:transition-all hover:after:w-full ${
-                      isActive ? "text-white after:w-full" : "hover:text-white after:w-0"
+                    `relative py-2 transition-colors after:absolute after:left-0 after:right-0 after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-[hsl(140_38%_70%)] after:origin-center after:transition-transform after:duration-300 ${
+                      isActive ? "text-[hsl(140_38%_70%)] after:scale-x-100" : "text-white/80 hover:text-white after:scale-x-0 hover:after:scale-x-50"
                     }`
                   }
                 >
@@ -178,9 +178,9 @@ export const Navbar = () => {
             <ul className="flex flex-col gap-4">
               {links.map((l) => (
                 <li key={l.to}>
-                  <Link to={l.to} onClick={() => setOpen(false)} className="text-lg font-medium">
+                  <NavLink to={l.to} onClick={() => setOpen(false)} className={({ isActive }) => `relative block py-2 text-lg font-medium transition-colors after:absolute after:left-0 after:right-0 after:bottom-0 after:h-0.5 after:rounded-full after:bg-primary after:origin-center after:transition-transform ${isActive ? "text-primary after:scale-x-100" : "text-foreground hover:text-primary after:scale-x-0"}`}>
                     {l.label}
-                  </Link>
+                  </NavLink>
                 </li>
               ))}
             </ul>

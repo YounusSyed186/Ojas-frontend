@@ -7,6 +7,10 @@ import heroBreakfast from "@/assets/hero-breakfast.jpg";
 import heroLunch from "@/assets/hero-lunch.jpg";
 import heroWellness from "@/assets/hero-wellness.jpg";
 import heroShots from "@/assets/hero-shots.jpg";
+import trustedPerson1 from "@/assets/doc-1.jpg";
+import trustedPerson2 from "@/assets/doc-2.jpg";
+import trustedPerson3 from "@/assets/doc-3.jpg";
+import trustedPerson4 from "@/assets/lifestyle.jpg";
 
 type Slide = {
   img: string;
@@ -50,6 +54,13 @@ const SLIDES: Slide[] = [
     highlight: "life",
     subtitle: "Wellness solutions tailored for everyday lifestyles and long-term balance.",
   },
+];
+
+const TRUSTED_AVATARS = [
+  { src: trustedPerson1, alt: "OJAS community member" },
+  { src: trustedPerson2, alt: "OJAS community member" },
+  { src: trustedPerson3, alt: "OJAS community member" },
+  { src: trustedPerson4, alt: "OJAS community member" },
 ];
 
 const AUTOPLAY_MS = 5800;
@@ -150,15 +161,28 @@ export const Hero = () => {
                 <ArrowRight className="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="rounded-full h-14 px-8 glass border-foreground/20 hover:bg-secondary text-base">
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="rounded-full h-14 px-8 border-primary/40 bg-background/90 text-primary backdrop-blur-xl hover:border-primary hover:bg-primary hover:text-primary-foreground active:bg-primary-glow active:text-primary-foreground focus-visible:ring-primary text-base"
+            >
               <Link to="/builder">Get nutrition plan</Link>
             </Button>
           </div>
 
           <div className="mt-12 flex items-center gap-6 text-xs uppercase tracking-[0.2em] text-black font-semibold">
             <div className="flex -space-x-2">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="w-8 h-8 rounded-full border-2 border-background bg-gradient-to-br from-primary to-primary-glow shadow-[0_1px_6px_rgba(0,0,0,0.15)]" />
+              {TRUSTED_AVATARS.map((avatar, i) => (
+                <img
+                  key={i}
+                  src={avatar.src}
+                  alt={avatar.alt}
+                  width={32}
+                  height={32}
+                  loading="lazy"
+                  className="w-8 h-8 rounded-full border-2 border-background object-cover object-center shadow-[0_1px_6px_rgba(0,0,0,0.15)]"
+                />
               ))}
             </div>
             <span>Trusted by 10,000+ people</span>

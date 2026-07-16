@@ -13,13 +13,19 @@ const catImages: Record<string, string> = {
   shots, breakfast, lunch, dinner,
 };
 
+const categoryOrder = ["shots", "breakfast", "lunch", "dinner"];
+
 export const Categories = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: () => mealApi.getCategories(),
   });
 
-  const categories: MealCategory[] = data?.categories ?? [];
+  const categories: MealCategory[] = [...(data?.categories ?? [])].sort((a, b) => {
+    const aIndex = categoryOrder.indexOf(a.slug);
+    const bIndex = categoryOrder.indexOf(b.slug);
+    return (aIndex === -1 ? categoryOrder.length : aIndex) - (bIndex === -1 ? categoryOrder.length : bIndex);
+  });
 
   return (
     <section id="meals" className="py-16 md:py-24">

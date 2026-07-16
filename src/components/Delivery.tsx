@@ -6,12 +6,21 @@ import { pincodeApi } from "@/lib/api/pincodeApi";
 import lifestyle from "@/assets/lifestyle.jpg";
 
 export const Delivery = () => {
-  const [state, setState] = useState<"idle" | "loading" | "in" | "out">("idle");
+  const [state, setState] = useState<"idle" | "loading" | "in" | "out" | "invalid">("idle");
   const [pincode, setPincode] = useState("");
   const [message, setMessage] = useState("");
 
   const check = async () => {
-    if (!pincode || pincode.length !== 6) return;
+    if (!pincode) {
+      setState("invalid");
+      setMessage("Please enter your 6-digit pincode.");
+      return;
+    }
+    if (!/^\d{6}$/.test(pincode)) {
+      setState("invalid");
+      setMessage("Pincode must contain exactly 6 digits.");
+      return;
+    }
     setState("loading");
     setMessage("");
     try {
@@ -55,17 +64,26 @@ export const Delivery = () => {
                   <MapPin className="w-4 h-4 opacity-70" />
                   <input
                     value={pincode}
-                    onChange={(e) => setPincode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    onChange={(e) => {
+                      setPincode(e.target.value.replace(/\D/g, "").slice(0, 6));
+                      setState("idle");
+                      setMessage("");
+                    }}
+                    id="serviceability-pincode"
+                    inputMode="numeric"
+                    pattern="[0-9]{6}"
+                    aria-invalid={state === "invalid"}
+                    aria-describedby="serviceability-result"
                     placeholder="Enter your pincode"
                     maxLength={6}
                     className="flex-1 bg-transparent outline-none placeholder:text-primary-foreground/50 text-sm py-1.5"
                   />
-                  <Button onClick={check} size="sm" className="rounded-full h-9 bg-accent text-accent-foreground hover:bg-accent-glow px-4">
+                  <Button type="button" onClick={check} disabled={state === "loading"} size="sm" className="rounded-full h-9 bg-accent text-accent-foreground hover:bg-accent-glow px-4">
                     {state === "loading" ? <Loader2 className="w-4 h-4 animate-spin" /> : "Check"}
                   </Button>
                 </div>
 
-                <div className="mt-5 min-h-[60px]">
+                <div id="serviceability-result" className="mt-5 min-h-[60px]" aria-live="polite">
                   {state === "in" && (
                     <div className="flex items-start gap-3 animate-fade-up">
                       <div className="w-8 h-8 rounded-full bg-accent/20 grid place-items-center text-accent-glow shrink-0">
@@ -74,6 +92,17 @@ export const Delivery = () => {
                       <div>
                         <div className="font-medium">You're in our service zone</div>
                         <div className="text-sm opacity-70">{message}</div>
+                      </div>
+                    </div>
+                  )}
+                  {state === "invalid" && (
+                    <div className="flex items-start gap-3 animate-fade-up" role="alert">
+                      <div className="w-8 h-8 rounded-full bg-destructive/20 grid place-items-center text-red-200 shrink-0">
+                        <AlertCircle className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="font-medium">Enter a valid pincode</div>
+                        <div className="text-sm opacity-80">{message}</div>
                       </div>
                     </div>
                   )}
