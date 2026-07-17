@@ -16,6 +16,7 @@ import {
   LogOut,
   Menu,
   X,
+  ShoppingBag,
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -36,6 +37,7 @@ const navItems: AdminNavItem[] = [
   { label: "Subscriptions", to: "/admin/subscriptions", icon: UtensilsCrossed },
   { label: "Consultations", to: "/admin/consultations", icon: MessageSquare },
   { label: "Payments", to: "/admin/payments", icon: CreditCard },
+  { label: "Meal Orders", to: "/admin/orders", icon: ShoppingBag },
   { label: "Plans", to: "/admin/plans", icon: ClipboardList },
   { label: "Meal Templates", to: "/admin/meal-templates", icon: FileText },
   { label: "Meal Options", to: "/admin/meal-options", icon: Pizza },

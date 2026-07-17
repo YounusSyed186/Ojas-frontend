@@ -55,6 +55,10 @@ import AdminPincodes from "./pages/admin/AdminPincodes.tsx";
 import AdminSettings from "./pages/admin/AdminSettings.tsx";
 import AdminReports from "./pages/admin/AdminReports.tsx";
 import Subscribe from "./pages/Subscribe.tsx";
+import Checkout from "./pages/Checkout.tsx";
+import CustomerOrders from "./pages/customer/CustomerOrders.tsx";
+import CustomerOrderDetail from "./pages/customer/CustomerOrderDetail.tsx";
+import AdminOrders from "./pages/admin/AdminOrders.tsx";
 
 const queryClient = new QueryClient();
 
@@ -78,6 +82,7 @@ const App = () => (
           <Route path="/builder" element={<Builder />} />
           <Route path="/builder/result" element={<BuilderResult />} />
           <Route path="/delivery" element={<DeliveryPage />} />
+          <Route path="/checkout" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><Checkout /></ProtectedRoute>} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/about" element={<About />} />
           <Route path="/dashboard" element={<ProtectedRoute><DashboardRedirect /></ProtectedRoute>} />
@@ -89,6 +94,8 @@ const App = () => (
           <Route path="/customer/consultations" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><CustomerConsultations /></ProtectedRoute>} />
           <Route path="/customer/consultations/:id" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><CustomerConsultationDetail /></ProtectedRoute>} />
           <Route path="/customer/payments" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><CustomerPayments /></ProtectedRoute>} />
+          <Route path="/customer/orders" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><CustomerOrders /></ProtectedRoute>} />
+          <Route path="/customer/orders/:orderNumber" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><CustomerOrderDetail /></ProtectedRoute>} />
           <Route path="/customer/notifications" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><CustomerNotifications /></ProtectedRoute>} />
           <Route path="/customer/settings" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><CustomerSettings /></ProtectedRoute>} />
           <Route path="/doctor/dashboard" element={<ProtectedRoute allowedRoles={[USER_ROLES.DOCTOR]}><DoctorDashboard /></ProtectedRoute>} />
@@ -106,6 +113,7 @@ const App = () => (
           <Route path="/admin/subscriptions" element={<ProtectedRoute allowedRoles={[USER_ROLES.ADMIN]}><AdminSubscriptions /></ProtectedRoute>} />
           <Route path="/admin/consultations" element={<ProtectedRoute allowedRoles={[USER_ROLES.ADMIN]}><AdminConsultations /></ProtectedRoute>} />
           <Route path="/admin/payments" element={<ProtectedRoute allowedRoles={[USER_ROLES.ADMIN]}><AdminPayments /></ProtectedRoute>} />
+          <Route path="/admin/orders" element={<ProtectedRoute allowedRoles={[USER_ROLES.ADMIN]}><AdminOrders /></ProtectedRoute>} />
           <Route path="/admin/plans" element={<ProtectedRoute allowedRoles={[USER_ROLES.ADMIN]}><AdminPlans /></ProtectedRoute>} />
           <Route path="/admin/meal-templates" element={<ProtectedRoute allowedRoles={[USER_ROLES.ADMIN]}><AdminMealTemplates /></ProtectedRoute>} />
           <Route path="/admin/meal-options" element={<ProtectedRoute allowedRoles={[USER_ROLES.ADMIN]}><AdminMealOptions /></ProtectedRoute>} />

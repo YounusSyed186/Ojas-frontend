@@ -38,6 +38,11 @@ export const adminApi = {
     apiClient.put(`/admin/subscriptions/${id}`, data).then((r) => r.data),
 
   payments: (params?: ListParams) => apiClient.get("/admin/payments", { params }).then((r) => r.data),
+  orders: (params?: ListParams) => apiClient.get("/admin/orders", { params }).then((r) => r.data),
+  updateOrderItem: (orderNumber: string, itemId: number, fulfillmentStatus: string) =>
+    apiClient.patch("/admin/orders/" + orderNumber + "/items/" + itemId, { fulfillment_status: fulfillmentStatus }).then((r) => r.data),
+  cancelOrder: (orderNumber: string, data: { order_item_id?: number; reason: string }) =>
+    apiClient.post("/admin/orders/" + orderNumber + "/cancel", data).then((r) => r.data),
 
   plans: (params?: ListParams) => apiClient.get("/admin/plans", { params }).then((r) => r.data),
 

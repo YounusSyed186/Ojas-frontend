@@ -11,6 +11,7 @@ import {
   X,
   Bell,
   ClipboardList,
+  ShoppingBag,
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,7 @@ const navItems: CustomerNavItem[] = [
   { label: "Dashboard", to: "/customer/overview", icon: LayoutDashboard },
   { label: "My Subscription", to: "/customer/subscription", icon: ClipboardList },
   { label: "Meal Plan", to: "/customer/meal-plan", icon: Utensils },
+  { label: "Meal Orders", to: "/customer/orders", icon: ShoppingBag },
   { label: "Consultations", to: "/customer/consultations", icon: CalendarDays },
   { label: "Payments", to: "/customer/payments", icon: CreditCard },
   { label: "Profile", to: "/customer/profile", icon: User },

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
 import { Flame, Plus, ArrowLeft, Check, Loader2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -7,7 +8,9 @@ import { Reveal } from "@/components/Reveal";
 import { mealApi } from "@/lib/api/mealApi";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "@/hooks/use-toast";
-import type { Meal, MealCategory } from "@/lib/api/types";
+import { getApiErrorMessage, type Meal, type MealCategory } from "@/lib/api/types";
+import { useAuth } from "@/contexts/AuthContext";
+import { AuthDialog } from "@/components/AuthDialog";
 import m1 from "@/assets/meal-1.jpg";
 import m2 from "@/assets/meal-2.jpg";
 import m3 from "@/assets/meal-3.jpg";
@@ -20,6 +23,8 @@ const images = [m1, m2, m3, m4, m5, m6];
 const MealDetail = () => {
   const { slug = "" } = useParams();
   const { add, open: openCart } = useCart();
+  const { isAuthenticated, isPhoneVerified } = useAuth();
+  const [authOpen, setAuthOpen] = useState(false);
   const { data, isLoading } = useQuery({
     queryKey: ["meals"],
     queryFn: () => mealApi.getAll(),
@@ -44,10 +49,18 @@ const MealDetail = () => {
 
   const cat = categories.find((c) => c.slug === meal.category);
   const related = meals.filter((m) => m.category === meal.category && m.slug !== meal.slug).slice(0, 3);
-  const handleAdd = () => {
-    add({ slug: meal.slug, name: meal.name, price: meal.price, img: images[0] });
-    toast({ title: "Added to your tray", description: meal.name });
-    openCart();
+  const handleAdd = async () => {
+    if (!isAuthenticated || !isPhoneVerified) {
+      setAuthOpen(true);
+      return;
+    }
+    try {
+      await add(meal.id);
+      toast({ title: "Added to your tray", description: meal.name });
+      openCart();
+    } catch (error: unknown) {
+      toast({ title: "Could not add meal", description: getApiErrorMessage(error, "Please try again."), variant: "destructive" });
+    }
   };
 
   return (
@@ -142,6 +155,7 @@ const MealDetail = () => {
           )}
         </div>
       </section>
+      <AuthDialog open={authOpen} onOpenChange={setAuthOpen} />
     </PageLayout>
   );
 };

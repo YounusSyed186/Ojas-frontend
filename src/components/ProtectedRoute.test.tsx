@@ -34,7 +34,7 @@ describe("ProtectedRoute", () => {
 
   it("renders protected content when authenticated", () => {
     vi.mocked(useAuth).mockReturnValue({
-      user: { id: 1, name: "Customer", email: "c@test.com", role: USER_ROLES.CUSTOMER, status: "active" },
+      user: { id: 1, name: "Customer", email: "c@test.com", role: USER_ROLES.CUSTOMER, status: "active", phone_verified_at: "2026-01-01T00:00:00Z" },
       token: "token-123",
       isLoading: false,
       isAuthenticated: true,

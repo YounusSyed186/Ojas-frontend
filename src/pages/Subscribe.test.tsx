@@ -67,6 +67,7 @@ describe("Subscribe", () => {
         phone: "9991112222",
         role: "customer",
         status: "active",
+        phone_verified_at: "2026-01-01T00:00:00Z",
       },
       token: "token-123",
       isLoading: false,

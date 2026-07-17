@@ -17,6 +17,7 @@ export type ApiValidationError = {
 };
 
 export type Meal = {
+  id: number;
   slug: string;
   name: string;
   tag: string;

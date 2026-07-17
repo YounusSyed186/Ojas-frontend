@@ -1,87 +1,83 @@
-import { createContext, useContext, useEffect, useMemo, useState, ReactNode } from "react";
-
-export type CartItem = {
-  slug: string;
-  name: string;
-  price: number;
-  img: string;
-  qty: number;
-};
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/contexts/AuthContext";
+import { cartApi, type CartItem, type ServerCart } from "@/lib/api/cartApi";
 
 type CartContextValue = {
+  cart: ServerCart | null;
   items: CartItem[];
   count: number;
   total: number;
+  isLoading: boolean;
   isOpen: boolean;
   open: () => void;
   close: () => void;
   toggle: () => void;
-  add: (item: Omit<CartItem, "qty">, qty?: number) => void;
-  remove: (slug: string) => void;
-  setQty: (slug: string, qty: number) => void;
-  clear: () => void;
+  add: (mealOptionId: number, quantity?: number) => Promise<void>;
+  remove: (itemId: number) => Promise<void>;
+  setQty: (itemId: number, quantity: number) => Promise<void>;
+  setDeliveryDate: (itemId: number, deliveryDate: string | null) => Promise<void>;
+  clear: () => Promise<void>;
+  refresh: () => Promise<void>;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
-const STORAGE_KEY = "ojas:cart";
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const [items, setItems] = useState<CartItem[]>(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? (JSON.parse(raw) as CartItem[]) : [];
-    } catch {
-      return [];
-    }
-  });
+  const { user, isAuthenticated, isPhoneVerified } = useAuth();
+  const queryClient = useQueryClient();
+  const queryKey = ["cart", user?.id] as const;
   const [isOpen, setIsOpen] = useState(false);
+  const enabled = isAuthenticated && isPhoneVerified && user?.role === "customer";
+  const { data: cart = null, isLoading, refetch } = useQuery({
+    queryKey,
+    queryFn: cartApi.get,
+    enabled,
+    staleTime: 10_000,
+  });
 
-  useEffect(() => {
+  const apply = useCallback(async (operation: (cart: ServerCart) => Promise<ServerCart>) => {
+    const current = queryClient.getQueryData<ServerCart>(queryKey);
+    if (!current) throw new Error("Cart is not ready. Please refresh and try again.");
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-    } catch {
-      return;
+      const next = await operation(current);
+      queryClient.setQueryData(queryKey, next);
+    } catch (error: unknown) {
+      const conflict = error as { response?: { status?: number; data?: { cart?: ServerCart } } };
+      if (conflict.response?.status === 409 && conflict.response.data?.cart) {
+        queryClient.setQueryData(queryKey, conflict.response.data.cart);
+      }
+      throw error;
     }
-  }, [items]);
+  }, [queryClient, queryKey]);
 
-  const value = useMemo<CartContextValue>(() => {
-    const count = items.reduce((s, i) => s + i.qty, 0);
-    const total = items.reduce((s, i) => s + i.qty * i.price, 0);
-    return {
-      items,
-      count,
-      total,
-      isOpen,
-      open: () => setIsOpen(true),
-      close: () => setIsOpen(false),
-      toggle: () => setIsOpen((v) => !v),
-      add: (item, qty = 1) =>
-        setItems((prev) => {
-          const idx = prev.findIndex((p) => p.slug === item.slug);
-          if (idx >= 0) {
-            const next = [...prev];
-            next[idx] = { ...next[idx], qty: next[idx].qty + qty };
-            return next;
-          }
-          return [...prev, { ...item, qty }];
-        }),
-      remove: (slug) => setItems((prev) => prev.filter((p) => p.slug !== slug)),
-      setQty: (slug, qty) =>
-        setItems((prev) =>
-          qty <= 0
-            ? prev.filter((p) => p.slug !== slug)
-            : prev.map((p) => (p.slug === slug ? { ...p, qty } : p)),
-        ),
-      clear: () => setItems([]),
-    };
-  }, [items, isOpen]);
+  const value = useMemo<CartContextValue>(() => ({
+    cart: enabled ? cart : null,
+    items: enabled ? cart?.items ?? [] : [],
+    count: enabled ? cart?.count ?? 0 : 0,
+    total: enabled ? cart?.grand_total ?? 0 : 0,
+    isLoading: enabled && isLoading,
+    isOpen,
+    open: () => setIsOpen(true),
+    close: () => setIsOpen(false),
+    toggle: () => setIsOpen((current) => !current),
+    add: async (mealOptionId, quantity = 1) => apply((current) => cartApi.add(mealOptionId, quantity, current.version)),
+    remove: async (itemId) => apply((current) => cartApi.remove(itemId, current.version)),
+    setQty: async (itemId, quantity) => {
+      if (quantity <= 0) return apply((current) => cartApi.remove(itemId, current.version));
+      return apply((current) => cartApi.update(itemId, { quantity }, current.version));
+    },
+    setDeliveryDate: async (itemId, deliveryDate) =>
+      apply((current) => cartApi.update(itemId, { delivery_date: deliveryDate }, current.version)),
+    clear: async () => apply((current) => cartApi.clear(current.version)),
+    refresh: async () => { await refetch(); },
+  }), [apply, cart, enabled, isLoading, isOpen, refetch]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
 
 export const useCart = () => {
-  const ctx = useContext(CartContext);
-  if (!ctx) throw new Error("useCart must be used within CartProvider");
-  return ctx;
+  const context = useContext(CartContext);
+  if (!context) throw new Error("useCart must be used within CartProvider");
+  return context;
 };
