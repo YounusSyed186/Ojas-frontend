@@ -166,7 +166,7 @@ const BuilderResult = () => {
                 <Link to="/plans">Subscribe weekly</Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="rounded-full h-12 px-8 bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
-                <Link to="/delivery">Check delivery</Link>
+                <Link to="/delivery">See if we deliver</Link>
               </Button>
             </div>
           </div>

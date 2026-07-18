@@ -17,6 +17,7 @@ import {
   Menu,
   X,
   ShoppingBag,
+  ArrowLeft,
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -62,9 +63,19 @@ export const AdminLayout = ({ title, subtitle, children, breadcrumbs }: AdminLay
     <div className="min-h-screen bg-gray-50">
       {/* Mobile header */}
       <div className="sticky top-0 z-40 flex items-center justify-between border-b bg-white px-4 py-3 lg:hidden">
-        <Link to="/admin/dashboard" className="text-lg font-bold text-gray-900">
-          OJAS Admin
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            to="/"
+            aria-label="Back to website"
+            title="Back to website"
+            className="rounded-lg p-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Link>
+          <Link to="/admin/dashboard" className="text-lg font-bold text-gray-900">
+            OJAS Admin
+          </Link>
+        </div>
         <Button variant="outline" size="icon" onClick={() => setMobileOpen((open) => !open)}>
           {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
         </Button>
@@ -79,7 +90,16 @@ export const AdminLayout = ({ title, subtitle, children, breadcrumbs }: AdminLay
           )}
         >
           <div className="flex h-full flex-col">
-            <div className="border-b px-6 py-5">
+            <div className="flex items-center gap-3 border-b px-4 py-4">
+              <Link
+                to="/"
+                aria-label="Back to website"
+                title="Back to website"
+                onClick={() => setMobileOpen(false)}
+                className="rounded-lg p-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Link>
               <Link to="/admin/dashboard" className="text-xl font-bold text-gray-900">
                 OJAS Admin
               </Link>

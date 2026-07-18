@@ -115,8 +115,8 @@ const DoctorConsultations = () => {
   });
 
   const notesMutation = useMutation({
-    mutationFn: ({ id, doctorNotes }: { id: number; doctorNotes: string }) =>
-      doctorDashboardApi.addNotes(id, doctorNotes),
+    mutationFn: ({ id, doctorNotes, markCompleted }: { id: number; doctorNotes: string; markCompleted: boolean }) =>
+      doctorDashboardApi.addNotes(id, doctorNotes, markCompleted),
     onSuccess: () => { toast({ title: "Notes saved" }); setNotes(""); refresh(); },
     onError: (error) => toast({ title: getApiErrorMessage(error, "Unable to save notes"), variant: "destructive" }),
   });
@@ -360,11 +360,11 @@ const DoctorConsultations = () => {
                   <Textarea rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Add consultation notes..." />
                   <div className="flex gap-2">
                     <Button size="sm" variant="outline" className="rounded-full" disabled={busy || !notes.trim()}
-                      onClick={() => notesMutation.mutate({ id: selectedId!, doctorNotes: notes })}>
+                      onClick={() => notesMutation.mutate({ id: selectedId!, doctorNotes: notes, markCompleted: false })}>
                       Save Notes
                     </Button>
                     <Button size="sm" variant="outline" className="rounded-full" disabled={busy || !notes.trim()}
-                      onClick={() => notesMutation.mutate({ id: selectedId!, doctorNotes: notes })}>
+                      onClick={() => notesMutation.mutate({ id: selectedId!, doctorNotes: notes, markCompleted: true })}>
                       Save & Complete
                     </Button>
                   </div>

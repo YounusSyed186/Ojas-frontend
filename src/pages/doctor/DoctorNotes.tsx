@@ -4,6 +4,8 @@ import { FileText, AlertCircle, Loader2, Plus, Clock } from "lucide-react";
 import { DoctorLayout } from "@/components/doctor/DoctorLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { doctorDashboardApi } from "@/lib/api/doctorDashboardApi";
@@ -20,6 +22,12 @@ const DoctorNotes = () => {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [newNote, setNewNote] = useState("");
+  const [consultationId, setConsultationId] = useState("");
+
+  const consultationsQuery = useQuery({
+    queryKey: ["doctor-consultations", "assigned", "notes-selector"],
+    queryFn: () => doctorDashboardApi.consultations({ scope: "assigned", per_page: 100 }),
+  });
 
   const notesQuery = useQuery({
     queryKey: ["doctor-notes", page],
@@ -27,17 +35,21 @@ const DoctorNotes = () => {
   });
 
   const addNoteMutation = useMutation({
-    mutationFn: () => doctorDashboardApi.addNotes(0, newNote),
+    mutationFn: () => doctorDashboardApi.addNotes(Number(consultationId), newNote, false),
     onSuccess: () => {
       toast({ title: "Note added" });
       setNewNote("");
       queryClient.invalidateQueries({ queryKey: ["doctor-notes"] });
+      queryClient.invalidateQueries({ queryKey: ["doctor-consultations"] });
     },
     onError: (error) => toast({ title: getApiErrorMessage(error, "Unable to add note"), variant: "destructive" }),
   });
 
   const notes = notesQuery.data?.notes?.data ?? [];
   const pagination = notesQuery.data?.notes;
+  const consultations = (consultationsQuery.data?.consultations?.data ?? []).filter(
+    (consultation: any) => consultation.doctor_id !== null,
+  );
 
   return (
     <DoctorLayout title="Notes" subtitle="Manage your consultation notes.">
@@ -48,6 +60,26 @@ const DoctorNotes = () => {
           </div>
           <p className="font-medium">Add a Note</p>
         </div>
+        <div className="space-y-2">
+          <Label htmlFor="note-consultation">Consultation</Label>
+          <Select value={consultationId} onValueChange={setConsultationId}>
+            <SelectTrigger id="note-consultation" className="rounded-xl">
+              <SelectValue placeholder={consultationsQuery.isLoading ? "Loading consultations..." : "Choose a consultation"} />
+            </SelectTrigger>
+            <SelectContent>
+              {consultations.map((consultation: any) => (
+                <SelectItem key={consultation.id} value={String(consultation.id)}>
+                  #{consultation.id} · {consultation.customer?.name || "Customer"} · {consultation.status}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {!consultationsQuery.isLoading && consultations.length === 0 && (
+            <p className="text-sm text-muted-foreground">
+              No assigned consultations are available. Accept a consultation before adding notes.
+            </p>
+          )}
+        </div>
         <Textarea
           rows={4}
           value={newNote}
@@ -57,7 +89,7 @@ const DoctorNotes = () => {
         />
         <Button
           className="rounded-full"
-          disabled={!newNote.trim() || addNoteMutation.isPending}
+          disabled={!consultationId || !newNote.trim() || addNoteMutation.isPending}
           onClick={() => addNoteMutation.mutate()}
         >
           {addNoteMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
