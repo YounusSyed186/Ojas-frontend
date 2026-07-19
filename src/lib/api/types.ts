@@ -90,7 +90,11 @@ export type DashboardConsultation = {
   id: number;
   status?: string | null;
   payment_status?: string | null;
+  preferred_slot_at?: string | null;
+  scheduled_for?: string | null;
+  created_at?: string | null;
   doctor?: {
+    id?: number;
     name?: string | null;
   } | null;
 };
@@ -116,9 +120,49 @@ export type ConsultationPaymentOrderResponse = {
 export type DashboardPayment = {
   id: number;
   gateway?: string | null;
+  reference?: string | null;
+  payable_type?: string | null;
+  payable_id?: number | null;
   amount?: number | string | null;
   status?: string | null;
-  created_at?: string;
+  created_at?: string | null;
+};
+
+export type CustomerProfileData = {
+  id: number;
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  role?: string | null;
+  status?: string | null;
+  phone_verified_at?: string | null;
+  address_line_1?: string | null;
+  address_line_2?: string | null;
+  city?: string | null;
+  state?: string | null;
+  pincode?: string | null;
+  created_at?: string | null;
+};
+
+export type CustomerDashboardStats = {
+  total_subscriptions: number;
+  active_subscriptions: number;
+  total_consultations: number;
+  total_orders: number;
+  pending_payments: number;
+  paid_payments: number;
+  upcoming_meals: number;
+};
+
+export type CustomerDashboardResponse = {
+  user: CustomerProfileData;
+  active_subscription?: CustomerSubscription | null;
+  today_meals: DashboardMeal[];
+  upcoming_meals: DashboardMeal[];
+  recent_consultations: DashboardConsultation[];
+  recent_payments: DashboardPayment[];
+  recent_orders: import("./orderApi").MealOrder[];
+  stats: CustomerDashboardStats;
 };
 
 export type ProfileUpdatePayload = {

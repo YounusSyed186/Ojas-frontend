@@ -37,4 +37,17 @@ describe("DashboardRedirect", () => {
 
     expect(document.body.textContent).toContain("Admin dashboard");
   });
+
+  it("redirects customers to the canonical customer dashboard", () => {
+    vi.mocked(useAuth).mockReturnValue({
+      user: { id: 2, name: "Customer", email: "c@test.com", role: USER_ROLES.CUSTOMER, status: "active" },
+      token: "token",
+      isLoading: false,
+      isAuthenticated: true,
+      login: vi.fn(), register: vi.fn(), logout: vi.fn(), verifyOtp: vi.fn(),
+    });
+
+    render(<MemoryRouter initialEntries={["/dashboard"]}><Routes><Route path="/dashboard" element={<DashboardRedirect />} /><Route path="/customer/dashboard" element={<div>Customer overview</div>} /></Routes></MemoryRouter>);
+    expect(document.body.textContent).toContain("Customer overview");
+  });
 });

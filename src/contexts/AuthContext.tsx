@@ -32,6 +32,7 @@ type AuthContextType = {
   logout: () => Promise<void>;
   sendOtp: (phone: string) => Promise<void>;
   verifyOtp: (phone: string, otp: string) => Promise<void>;
+  refreshUser: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -161,6 +162,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         logout,
         sendOtp,
         verifyOtp,
+        refreshUser: fetchUser,
       }}
     >
       {children}

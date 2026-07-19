@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -22,7 +22,6 @@ import BuilderResult from "./pages/BuilderResult.tsx";
 import DeliveryPage from "./pages/DeliveryPage.tsx";
 import Contact from "./pages/Contact.tsx";
 import About from "./pages/About.tsx";
-import Dashboard from "./pages/Dashboard.tsx";
 import CustomerOverview from "./pages/customer/CustomerOverview.tsx";
 import CustomerProfile from "./pages/customer/CustomerProfile.tsx";
 import CustomerSubscription from "./pages/customer/CustomerSubscription.tsx";
@@ -30,8 +29,6 @@ import CustomerMealPlan from "./pages/customer/CustomerMealPlan.tsx";
 import CustomerConsultations from "./pages/customer/CustomerConsultations.tsx";
 import CustomerConsultationDetail from "./pages/customer/CustomerConsultationDetail.tsx";
 import CustomerPayments from "./pages/customer/CustomerPayments.tsx";
-import CustomerNotifications from "./pages/customer/CustomerNotifications.tsx";
-import CustomerSettings from "./pages/customer/CustomerSettings.tsx";
 import DashboardRedirect from "./pages/DashboardRedirect.tsx";
 import DoctorDashboard from "./pages/doctor/DoctorDashboard.tsx";
 import DoctorConsultations from "./pages/doctor/DoctorConsultations.tsx";
@@ -86,9 +83,10 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/about" element={<About />} />
           <Route path="/dashboard" element={<ProtectedRoute><DashboardRedirect /></ProtectedRoute>} />
-          <Route path="/customer/dashboard" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><Dashboard /></ProtectedRoute>} />
-          <Route path="/customer/overview" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><CustomerOverview /></ProtectedRoute>} />
-          <Route path="/customer/profile" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><CustomerProfile /></ProtectedRoute>} />
+          <Route path="/customer/dashboard" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><CustomerOverview /></ProtectedRoute>} />
+          <Route path="/customer/overview" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><Navigate to="/customer/dashboard" replace /></ProtectedRoute>} />
+          <Route path="/customer/account" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><CustomerProfile /></ProtectedRoute>} />
+          <Route path="/customer/profile" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><Navigate to="/customer/account" replace /></ProtectedRoute>} />
           <Route path="/customer/subscription" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><CustomerSubscription /></ProtectedRoute>} />
           <Route path="/customer/meal-plan" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><CustomerMealPlan /></ProtectedRoute>} />
           <Route path="/customer/consultations" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><CustomerConsultations /></ProtectedRoute>} />
@@ -96,8 +94,8 @@ const App = () => (
           <Route path="/customer/payments" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><CustomerPayments /></ProtectedRoute>} />
           <Route path="/customer/orders" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><CustomerOrders /></ProtectedRoute>} />
           <Route path="/customer/orders/:orderNumber" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><CustomerOrderDetail /></ProtectedRoute>} />
-          <Route path="/customer/notifications" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><CustomerNotifications /></ProtectedRoute>} />
-          <Route path="/customer/settings" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><CustomerSettings /></ProtectedRoute>} />
+          <Route path="/customer/notifications" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><Navigate to="/customer/dashboard" replace /></ProtectedRoute>} />
+          <Route path="/customer/settings" element={<ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}><Navigate to="/customer/account" replace /></ProtectedRoute>} />
           <Route path="/doctor/dashboard" element={<ProtectedRoute allowedRoles={[USER_ROLES.DOCTOR]}><DoctorDashboard /></ProtectedRoute>} />
           <Route path="/doctor/consultations" element={<ProtectedRoute allowedRoles={[USER_ROLES.DOCTOR]}><DoctorConsultations /></ProtectedRoute>} />
           <Route path="/doctor/patients" element={<ProtectedRoute allowedRoles={[USER_ROLES.DOCTOR]}><DoctorPatients /></ProtectedRoute>} />

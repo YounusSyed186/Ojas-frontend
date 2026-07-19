@@ -69,7 +69,7 @@ const DoctorNotes = () => {
             <SelectContent>
               {consultations.map((consultation: any) => (
                 <SelectItem key={consultation.id} value={String(consultation.id)}>
-                  #{consultation.id} · {consultation.customer?.name || "Customer"} · {consultation.status}
+                  {consultation.customer?.name || "Customer"} · Consultation #{consultation.id} · {consultation.status}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -131,6 +131,10 @@ const DoctorNotes = () => {
                     <FileText className="h-4 w-4 text-[#021B09]" />
                   </div>
                   <div className="flex-1 min-w-0">
+                    <div className="mb-2 flex flex-wrap items-center gap-2">
+                      <p className="font-medium text-gray-900">{n.customer?.name || "Customer"}</p>
+                      <Badge variant="outline">Consultation #{n.id}</Badge>
+                    </div>
                     <p className="text-sm whitespace-pre-wrap">{n.doctor_notes || n.note || n.content}</p>
                     <p className="text-xs text-muted-foreground flex items-center gap-1 mt-2">
                       <Clock className="h-3 w-3" /> {formatDate(n.created_at)}

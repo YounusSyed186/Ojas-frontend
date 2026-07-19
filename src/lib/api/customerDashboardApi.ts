@@ -1,9 +1,17 @@
 import apiClient from "../apiClient";
+import type {
+  ConsultationDetail,
+  CustomerDashboardResponse,
+  CustomerProfileData,
+  DashboardConsultation,
+  DashboardPayment,
+  PaginatedResponse,
+} from "./types";
 
 export const customerDashboardApi = {
-  overview: () => apiClient.get("/customer/dashboard").then((r) => r.data),
+  overview: () => apiClient.get<CustomerDashboardResponse>("/customer/dashboard").then((r) => r.data),
 
-  profile: () => apiClient.get("/customer/profile").then((r) => r.data),
+  profile: () => apiClient.get<{ user: CustomerProfileData }>("/customer/profile").then((r) => r.data),
 
   updateProfile: (data: Record<string, unknown>, token?: string | null) =>
     apiClient
@@ -25,10 +33,10 @@ export const customerDashboardApi = {
     apiClient.post(`/subscriptions/${id}/cancel`).then((r) => r.data),
 
   consultations: (params?: Record<string, unknown>) =>
-    apiClient.get("/customer/consultations", { params }).then((r) => r.data),
+    apiClient.get<{ consultations: PaginatedResponse<DashboardConsultation> }>("/customer/consultations", { params }).then((r) => r.data),
 
   consultationDetail: (id: number) =>
-    apiClient.get(`/consultations/${id}`).then((r) => r.data),
+    apiClient.get<{ consultation: ConsultationDetail }>(`/consultations/${id}`).then((r) => r.data),
 
   bookConsultation: (data: { doctor_id?: number; preferred_slot_at?: string; request_notes?: string }) =>
     apiClient.post("/consultations", data).then((r) => r.data),
@@ -37,5 +45,5 @@ export const customerDashboardApi = {
     apiClient.post(`/consultations/${id}/cancel`).then((r) => r.data),
 
   payments: (params?: Record<string, unknown>) =>
-    apiClient.get("/customer/payments", { params }).then((r) => r.data),
+    apiClient.get<{ payments: PaginatedResponse<DashboardPayment> }>("/customer/payments", { params }).then((r) => r.data),
 };

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { customerDashboardApi } from "@/lib/api/customerDashboardApi";
 import { useToast } from "@/hooks/use-toast";
+import { dashboardErrorMessage } from "@/lib/utils";
 
 const statusClass = (status?: string) => {
   if (status === "active" || status === "paid") return "bg-green-100 text-green-700";
@@ -33,14 +34,17 @@ const CustomerSubscription = () => {
   const pauseSub = useMutation({
     mutationFn: (id: number) => customerDashboardApi.pauseSubscription(id),
     onSuccess: () => { toast({ title: "Subscription paused" }); refresh(); },
+    onError: (error) => toast({ title: dashboardErrorMessage(error, "Could not pause subscription"), variant: "destructive" }),
   });
   const resumeSub = useMutation({
     mutationFn: (id: number) => customerDashboardApi.resumeSubscription(id),
     onSuccess: () => { toast({ title: "Subscription resumed" }); refresh(); },
+    onError: (error) => toast({ title: dashboardErrorMessage(error, "Could not resume subscription"), variant: "destructive" }),
   });
   const cancelSub = useMutation({
     mutationFn: (id: number) => customerDashboardApi.cancelSubscription(id),
     onSuccess: () => { toast({ title: "Subscription cancelled" }); refresh(); },
+    onError: (error) => toast({ title: dashboardErrorMessage(error, "Could not cancel subscription"), variant: "destructive" }),
   });
 
   if (isLoading) {
@@ -120,7 +124,7 @@ const CustomerSubscription = () => {
                   <RotateCcw className="w-4 h-4 mr-2" /> Renew / Change Plan
                 </Link>
               </Button>
-              <Button disabled={busy} onClick={() => cancelSub.mutate(sub.id)} variant="outline" className="text-red-500 border-red-200 hover:bg-red-50">
+              <Button disabled={busy} onClick={() => window.confirm("Cancel this subscription? This action cannot be undone.") && cancelSub.mutate(sub.id)} variant="outline" className="text-red-500 border-red-200 hover:bg-red-50">
                 <Trash2 className="w-4 h-4 mr-2" /> Cancel Subscription
               </Button>
             </div>

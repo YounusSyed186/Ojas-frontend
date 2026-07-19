@@ -20,7 +20,7 @@ const groupByDate = (meals: DashboardMeal[]) => {
 };
 
 const CustomerMealPlan = () => {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["customer-overview"],
     queryFn: () => customerDashboardApi.overview(),
   });
@@ -31,6 +31,10 @@ const CustomerMealPlan = () => {
         <div className="flex items-center justify-center py-20"><Loader2 className="h-8 w-8 animate-spin" /></div>
       </CustomerLayout>
     );
+  }
+
+  if (isError) {
+    return <CustomerLayout title="Meal Plan" subtitle="Your assigned meals and nutrition details."><div className="rounded-2xl border bg-card p-10 text-center"><p className="text-destructive">Could not load your meal plan.</p><button className="mt-4 rounded-xl bg-primary px-4 py-2 text-sm text-primary-foreground" onClick={() => refetch()}>Try again</button></div></CustomerLayout>;
   }
 
   const todayMeals: DashboardMeal[] = data?.today_meals ?? [];

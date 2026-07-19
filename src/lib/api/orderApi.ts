@@ -1,4 +1,5 @@
 import apiClient from "../apiClient";
+import type { PaginatedResponse } from "./types";
 
 export type OrderItem = {
   id: number;
@@ -46,6 +47,6 @@ export const orderApi = {
   verify: (orderNumber: string, data: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) =>
     apiClient.post("/orders/" + orderNumber + "/payments/razorpay/verify", data).then((response) => response.data),
   abandon: (orderNumber: string) => apiClient.post("/orders/" + orderNumber + "/checkout/abandon").then((response) => response.data),
-  getAll: () => apiClient.get<{ orders: { data: MealOrder[] } }>("/orders").then((response) => response.data.orders),
+  getAll: (params?: { page?: number; per_page?: number }) => apiClient.get<{ orders: PaginatedResponse<MealOrder> }>("/orders", { params }).then((response) => response.data.orders),
   getByNumber: (orderNumber: string) => apiClient.get<{ order: MealOrder }>("/orders/" + orderNumber).then((response) => response.data.order),
 };
