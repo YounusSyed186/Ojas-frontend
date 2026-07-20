@@ -23,16 +23,16 @@ const AdminUsers = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [page, setPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState<Record<string, unknown> | null>(null);
   const [editForm, setEditForm] = useState<Record<string, string>>({});
 
   const queryParams: Record<string, unknown> = { page, per_page: 20 };
   if (search) queryParams.search = search;
-  if (roleFilter) queryParams.role = roleFilter;
-  if (statusFilter) queryParams.status = statusFilter;
+  if (roleFilter !== "all") queryParams.role = roleFilter;
+  if (statusFilter !== "all") queryParams.status = statusFilter;
 
   const usersQuery = useQuery({
     queryKey: ["admin-users", queryParams],

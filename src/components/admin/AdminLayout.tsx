@@ -90,16 +90,19 @@ export const AdminLayout = ({ title, subtitle, children, breadcrumbs }: AdminLay
           )}
         >
           <div className="flex h-full flex-col">
-            <div className="flex items-center gap-3 border-b px-4 py-4">
+            <div className="border-b px-3 py-3">
               <Link
                 to="/"
                 aria-label="Back to website"
                 title="Back to website"
                 onClick={() => setMobileOpen(false)}
-                className="rounded-lg p-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
               >
-                <ArrowLeft className="h-5 w-5" />
+                <ArrowLeft className="h-4 w-4" />
+                <span>Back to website</span>
               </Link>
+            </div>
+            <div className="border-b px-6 py-4">
               <Link to="/admin/dashboard" className="text-xl font-bold text-gray-900">
                 OJAS Admin
               </Link>
